@@ -1,0 +1,175 @@
+<Permissions>
+	<!--
+	You can find the required parameters over PowerShell (e.g. Get-ACL -Path "AD:\OU=XYZ,DC=Contoso,DC=com" | Select-Object -ExpandProperty Access)
+	It's easiest to set the permissions on a test OU manually and then just read them out.
+	NOTE: at no point are permissions removed (for safety).
+	The script will only set permissions but never removed them. It will only check if the permission exists and if not create it.
+	If you change the permission at a later time, a new permisson will be created. The old permission object stays on the ACLd.
+	
+    <Permission Name="">
+        <AccessRules>
+            <AccessRule Description="">
+                <ActiveDirectoryRights></ActiveDirectoryRights>
+                <InheritanceType></InheritanceType>
+                <ObjectType></ObjectType>
+                <InheritedObjectType></InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    -->
+    <Permission Name="FullAccess">
+        <AccessRules>
+            <AccessRule Description="AllObjectsFullAccess">
+                <ActiveDirectoryRights>GenericAll</ActiveDirectoryRights>
+                <InheritanceType>All</InheritanceType>
+                <ObjectType>00000000-0000-0000-0000-000000000000</ObjectType>
+                <InheritedObjectType>00000000-0000-0000-0000-000000000000</InheritedObjectType>
+                <!--
+                While technically possible, ACL can only be set to Allow not deny.
+                This is mainly to prevent uneccessary complex ACLs from being created.
+                ACLs shouldn't explicit deny -> remove read permissions in the first place!
+                <AccessControlType>Allow</AccessControlType>
+                -->
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    <Permission Name="FullAccessNoSecurity">
+        <AccessRules>
+            <AccessRule Description="AllObjectsFullAccessNoSecurity">
+                <ActiveDirectoryRights>CreateChild, DeleteChild, ListChildren, ReadProperty, DeleteTree, ExtendedRight, Delete, GenericWrite</ActiveDirectoryRights>
+                <InheritanceType>All</InheritanceType>
+                <ObjectType>00000000-0000-0000-0000-000000000000</ObjectType>
+                <InheritedObjectType>00000000-0000-0000-0000-000000000000</InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    <Permission Name="NoDelete">
+        <AccessRules>
+            <AccessRule Description="AllObjectsCreateWrite">
+                <ActiveDirectoryRights>CreateChild, ListChildren, ReadProperty, GenericWrite</ActiveDirectoryRights>
+                <InheritanceType>All</InheritanceType>
+                <ObjectType>00000000-0000-0000-0000-000000000000</ObjectType>
+                <InheritedObjectType>00000000-0000-0000-0000-000000000000</InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    <!-- This is set on an OU to allow all Descendening groups to be written to -->
+    <Permission Name="GroupsWriteMembers">
+        <AccessRules>
+            <AccessRule Description="GroupsFullRead">
+                <ActiveDirectoryRights>ReadProperty, GenericExecute</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>00000000-0000-0000-0000-000000000000</ObjectType>
+                <InheritedObjectType>bf967a9c-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="GroupsWrite-Member">
+                <ActiveDirectoryRights>WriteProperty</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>bf9679c0-0de6-11d0-a285-00aa003049e2</ObjectType>
+                <InheritedObjectType>bf967a9c-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    <!-- This is set on an Group to allow all the specific Group to be written to -->
+    <Permission Name="GroupWriteMembers">
+        <AccessRules>
+            <AccessRule Description="GroupsFullRead">
+                <ActiveDirectoryRights>ReadProperty, GenericExecute</ActiveDirectoryRights>
+                <InheritanceType>None</InheritanceType>
+                <ObjectType>00000000-0000-0000-0000-000000000000</ObjectType>
+                <InheritedObjectType>bf967a9c-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="GroupsWrite-Member">
+                <ActiveDirectoryRights>WriteProperty</ActiveDirectoryRights>
+                <InheritanceType>None</InheritanceType>
+                <ObjectType>bf9679c0-0de6-11d0-a285-00aa003049e2</ObjectType>
+                <InheritedObjectType>bf967a9c-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    <Permission Name="ComputerDomainJoin">
+        <AccessRules>
+            <AccessRule Description="ComputersFullRead">
+                <ActiveDirectoryRights>ReadProperty, GenericExecute</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>00000000-0000-0000-0000-000000000000</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="ComputerResetPassword">
+                <ActiveDirectoryRights>ExtendedRight</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>00299570-246d-11d0-a768-00aa006e0529</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="ComputerChangePassword">
+                <ActiveDirectoryRights>ExtendedRight</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>ab721a53-1e2f-11d0-9819-00aa0040529b</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    <Permission Name="LapsADComputerSelfPermission">
+        <AccessRules>
+            <!-- These Names are not confirmed, but these ACLs are required for LAPS -->
+            <AccessRule Description="WritePasswordHistory">
+                <ActiveDirectoryRights>ReadProperty, WriteProperty, ExtendedRight</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="WritePasswordExpirationTime">
+                <ActiveDirectoryRights>ReadProperty, WriteProperty</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>c0a91eb4-398b-4085-ada3-926aa7b28ea6</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="WritePassword">
+                <ActiveDirectoryRights>WriteProperty</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>e5707617-3f38-4ab7-b17d-158d47eb55e0</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    <Permission Name="LapsADReadPasswordPermission">
+        <AccessRules>
+            <!-- These Names are not confirmed, but these ACLs are required for LAPS -->
+            <AccessRule Description="ReadLAPS1">
+                <ActiveDirectoryRights>ReadProperty, ExtendedRight</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>65062ae3-0930-40cd-a50b-1fe263fbad48</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="ReadLAPS2">
+                <ActiveDirectoryRights>ReadProperty, ExtendedRight</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>9429345a-ff5e-498e-8773-736370f8ac9e</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="ReadLAPS3">
+                <ActiveDirectoryRights>ReadProperty, ExtendedRight</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>e5707617-3f38-4ab7-b17d-158d47eb55e0</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+            <AccessRule Description="ReadPasswordExpirationTime">
+                <ActiveDirectoryRights>ReadProperty</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>c0a91eb4-398b-4085-ada3-926aa7b28ea6</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+    <Permission Name="LapsADResetPasswordPermission">
+        <AccessRules>
+            <!-- These Names are not confirmed, but these ACLs are required for LAPS -->
+            <AccessRule Description="WritePasswordExpirationTime">
+                <ActiveDirectoryRights>ReadProperty, WriteProperty</ActiveDirectoryRights>
+                <InheritanceType>Descendents</InheritanceType>
+                <ObjectType>c0a91eb4-398b-4085-ada3-926aa7b28ea6</ObjectType>
+                <InheritedObjectType>bf967a86-0de6-11d0-a285-00aa003049e2</InheritedObjectType>
+            </AccessRule>
+        </AccessRules>
+    </Permission>
+</Permissions>

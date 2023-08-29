@@ -1,0 +1,46 @@
+<OrganizationalStructure>
+	<!--
+		OrganizationalStructure have the same abilities as OU. They will be directly inserted
+		This means that this:
+		<OU Name="Test">
+			<OU OrganizationalTemplate="Location" />
+		</OU>
+		
+		Will result in this:
+		<OU Name="Test">
+			<GPOGroup GroupName="Default_Location" />
+
+			<OU Name="Administrators" />
+			<OU Name="Computers">
+				<Permission Identity="S-1-5-10" Permission="LapsADComputerSelfPermission" />
+			</OU>
+			<OU Name="Groups" />
+			<OU Name="Servers" />
+			<OU Name="ServiceAccounts" />
+		</OU>
+		
+		And NOT this:
+		<OU Name="Test">
+			<OU>
+				<GPOGroup GroupName="Default_Location" />
+
+				<OU Name="Administrators" />
+				<OU Name="Computers">
+					<Permission Identity="S-1-5-10" Permission="LapsADComputerSelfPermission" />
+				</OU>
+				<OU Name="Groups" />
+				<OU Name="Servers" />
+				<OU Name="ServiceAccounts" />
+			</OU>
+		</OU>
+	-->
+	<GPOGroup GroupName="Default_Location" />
+	
+    <OU Name="Administrators" />
+    <OU Name="Computers">
+        <Permission Identity="S-1-5-10" Permission="LapsADComputerSelfPermission" />
+    </OU>
+    <OU Name="Groups" />
+    <OU Name="Servers" />
+    <OU Name="ServiceAccounts" />
+</OrganizationalStructure>

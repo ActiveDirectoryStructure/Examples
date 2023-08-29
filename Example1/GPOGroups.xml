@@ -1,0 +1,10 @@
+<GPOGroups>
+    <!--
+		GPO Groups can be used to apply multiple GPOs at once.
+		This is usefull for example when used in a ForEach
+	-->
+    
+	<GPOGroup GroupName="Default_Domain_Policies">
+        <GPO DisplayName="Default Domain Policy" Order="1" />
+    </GPOGroup>
+</GPOGroups>

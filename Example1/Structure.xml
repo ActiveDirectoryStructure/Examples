@@ -1,0 +1,77 @@
+<!--
+    ADDC = Domain
+    ADDN = Domain + TopMost OU. If creating TopMost set to same as ADDC. This can be used to create new strucute in a test top level OU
+	Containers will always use ADDC (since they are TopMost always).
+-->
+<OrganizationalStructure ADDC='DC=Contoso,DC=com' ADDN='OU=_NEW,DC=Contoso,DC=com'>
+    <OU Name="Workplace" Description="Workplace">
+		<GPOGroup GroupName="Default_Domain_Policies" />
+	
+        <OU Name="Countries">
+            <ForEach Variable="Countries">
+                <ForEach Variable="Locations">
+					<OU OrganizationalTemplate="Location" />
+                </ForEach>
+            </ForEach>
+        </OU>
+
+        <!-- Global Location -->
+        <OU Name="Global">
+            <OU Name="Administrators" />
+			<OU Name="Groups" />
+        </OU>
+    </OU>
+	
+	<OU Name="Admin">
+		<GPO DisplayName="SomeAdminGPO" />
+		<OU Name="Groups" />
+	</OU>
+	
+	<!--
+        Container Management does not have the same abilities as OU management.
+        Here only Permissions can be set (no Templates, no GPOs, no OUs) as these are containers and not OUs.
+        Also there will only be an error thrown if the container does not exist. At no point does it try to create the missing container.
+        We don't want to fuck up the default containers. Missing containers must be manually created or removed from the check.
+        Also only the following Containers are supported: System, Configuration, Users, Computers, Builtin
+
+        SID Translation Table: https://learn.microsoft.com/en-us/windows/win32/secauthz/well-known-sids
+        DOMAIN_USER_RID_ADMIN = 500
+        DOMAIN_GROUP_RID_ADMINS = 512
+        DOMAIN_GROUP_RID_USERS = 513
+        DOMAIN_GROUP_RID_COMPUTERS = 515
+        DOMAIN_GROUP_RID_CONTROLLERS = 516
+        DOMAIN_GROUP_RID_ENTERPRISE_ADMINS = 519
+    -->
+
+    <!-- Default Systems Container -->
+    <System Name="System">
+    </System>
+
+    <!-- Default Configuration Container -->
+    <Configuration Name="Configuration">
+        <Container Name="Services">
+            <Container Name="Public Key Services">
+                <Container Name="Certificate Templates">
+					<!-- Sets Permissions on the Certificate Templates container -->
+                    <Permission Identity="CN=PKI_Template-Admin,OU=Groups,OU=Admin" Permission="FullAccessNoSecurity" />
+                </Container>
+            </Container>
+        </Container>
+    </Configuration>
+
+	<!-- Default Computers Container -->
+    <Computers Name="Computers">
+    </Computers>
+
+	<!-- Default Users Container -->
+    <Users Name="Users">
+		<Group SID="515">
+			<!-- Sets Permissions on the Default Domain Computers Group, identified by SID -->
+            <Permission Identity="CN=Computers_RW,OU=Groups,OU=Admin" Permission="GroupWriteMembers" />
+        </Group>
+    </Users>
+
+	<!-- Default Builtin Container -->
+    <Builtin Name="Builtin">
+    </Builtin>
+</OrganizationalStructure>

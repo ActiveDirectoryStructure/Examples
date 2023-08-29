@@ -1,0 +1,30 @@
+<Variables>
+	<!--
+		Variables can contain subvariables. But note that you can only access variables on the same scope
+		E.g. if you loop through Countries you can access the Locations variables (or others you create on the same level)
+		You can't access the variables above anymore. There is no concept of Global Variables (yet?)
+	-->
+    <Variable Name="Countries">
+        <Variable Value="CH">
+            <Variable Name="Locations">
+                <Variable Value="CHA" />
+				<Variable Value="CHB" />
+            </Variable>
+        </Variable>
+
+        <Variable Value="DE">
+            <Variable Name="Locations">
+                <Variable Value="DEA" />
+            </Variable>
+        </Variable>
+		
+		<Variable Value="AT">
+            <Variable Name="Locations">
+                <Variable Value="ATA" />
+                <Variable Value="ATB" />
+				<Variable Value="ATC" />
+				<Variable Value="ATC" />
+            </Variable>
+        </Variable>
+	</Variable>
+</Variables>
